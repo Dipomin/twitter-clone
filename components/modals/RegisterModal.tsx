@@ -1,8 +1,11 @@
 import React, { useCallback, useState } from "react";
-import useLoginModal from "../hooks/useLoginModal";
+import useLoginModal from "../../hooks/useLoginModal";
 import Input from "../Input";
 import Modal from "../Modal";
-import useRegisterModal from "../hooks/useRegisterModal";
+import { signIn } from "next-auth/react";
+import useRegisterModal from "../../hooks/useRegisterModal";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const RegisterModal = () => {
   const loginModal = useLoginModal();
@@ -27,15 +30,28 @@ const RegisterModal = () => {
     try {
       setIsLoading(true);
 
-      // TO DO ADD REGISTER AND LOGIN
+      await axios.post("/api/register", {
+        email,
+        password,
+        username,
+        name,
+      });
+
+      toast.success("Compte créé avec succès.");
+
+      signIn("credentials", {
+        email,
+        password,
+      });
 
       registerModal.onClose();
     } catch (error) {
       console.log(error);
+      toast.error("Quelque chose s'est mal passé");
     } finally {
       setIsLoading(false);
     }
-  }, [loginModal]);
+  }, [registerModal, email, password, name, username]);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -46,19 +62,20 @@ const RegisterModal = () => {
         disabled={isLoading}
       />
       <Input
-        placeholder="Name"
+        placeholder="Nom"
         onChange={(e) => setName(e.target.value)}
         value={name}
         disabled={isLoading}
       />
       <Input
-        placeholder="Username"
+        placeholder="Identifiant"
         onChange={(e) => setUsername(e.target.value)}
         value={username}
         disabled={isLoading}
       />
       <Input
-        placeholder="Password"
+        placeholder="Mot de passe"
+        type="password"
         onChange={(e) => setPassword(e.target.value)}
         value={password}
         disabled={isLoading}
@@ -85,7 +102,7 @@ const RegisterModal = () => {
       disabled={isLoading}
       isOpen={registerModal.isOpen}
       title="Créer un compte"
-      actionLabel="Register"
+      actionLabel="Créer"
       onClose={registerModal.onClose}
       onSubmit={onSubmit}
       body={bodyContent}

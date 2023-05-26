@@ -1,5 +1,7 @@
 import Head from "next/head";
 import Header from "../components/Header";
+import Form from "../components/Form";
+import PostFeed from "../components/posts/PostFeed";
 
 export default function Home() {
   return (
@@ -12,6 +14,8 @@ export default function Home() {
 
       <div className="text-4xl text-sky-500">
         <Header label="Accueil" />
+        <Form placeholder="Quoi de neuf ?" />
+        <PostFeed />
       </div>
     </div>
   );
